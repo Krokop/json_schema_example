@@ -4,7 +4,7 @@ from schematics.types.compound import PolyModelType
 from couchdb_schematics.document import SchematicsDocument
 
 
-LAST_VERSION = '002'
+LAST_VERSION = '001'
 
 
 class BaseSchema(SchematicsDocument):
