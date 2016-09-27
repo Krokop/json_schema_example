@@ -36,10 +36,11 @@ def create_item():
 
 
 @main_app.route('/items/<post_id>/', methods=['GET', 'PUT'])
-def get_item(post_id):
+def get_or_edit_item(post_id):
     item = Item.load(get_db(), post_id)
     item_data = item.serialize()
     if request.method == 'GET':
+        item_data['properties']['props'] = json.loads(item_data['properties']['props'])
         return json.dumps(item_data)
     else:
         db = get_db()
@@ -56,7 +57,9 @@ def get_item(post_id):
         data['data']['properties']['props'] = json.dumps(props)
         item.import_data(data['data'])
         item.store(db)
-        return json.dumps(item.serialize())
+        item_ser = item.serialize()
+        item_ser['properties']['props'] = json.loads(item_ser['properties']['props'])
+        return json.dumps(item_ser)
 
 
 def get_db():
