@@ -20,7 +20,7 @@ def get_cpv_schema(cpv_code, version=LAST_VERSION):
 
 
 @main_app.route('/items', methods=['POST'])
-def get_items():
+def create_item():
     db = get_db()
     data = json.loads(request.data.decode('utf-8'))
     schema = get_cpv_schema(data['data']['cpv'])
