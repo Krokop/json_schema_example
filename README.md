@@ -1,6 +1,9 @@
 ## Base module for integration Schema
 
-
+Install dependency
+```bash
+make build_env
+```
 
 Start server
 ```bash
