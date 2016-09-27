@@ -48,3 +48,24 @@ For edit item send PUT on 127.0.0.1:5000/items/{id_item}/
   }
 }
 ```
+
+For create item with custom version you need send "version" in "properties"
+```json
+{
+  "data": {
+    "name": "First item",
+    "cpv": "MA07-9",
+    "properties": {
+      "version": "001",
+      "props": {
+        "model": "Model as a string",
+        "type": "Хетчбек",
+        "motor": {
+          "properties": 123,
+          "bore": 101
+        }
+      }
+    }
+  }
+}
+```
