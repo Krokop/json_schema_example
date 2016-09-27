@@ -9,12 +9,6 @@
       "description": "Модель",
       "type": "string"
     },
-    "year": {
-      "title": "Рік випуску",
-      "description": "Рік випуску автомобіля",
-      "type": "string",
-      "format": "date-time"
-    },
     "type": {
       "title": "Тип машини",
       "description": "",

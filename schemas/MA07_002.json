@@ -7,7 +7,7 @@
     "model": {
       "title": "Модель",
       "description": "Модель",
-      "type": "string"
+      "type": "integer"
     },
     "type": {
       "title": "Тип машини",
