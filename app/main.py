@@ -19,23 +19,20 @@ def get_cpv_schema(cpv_code, version=LAST_VERSION):
     return
 
 
-@main_app.route('/items', methods=['GET', 'POST'])
+@main_app.route('/items', methods=['POST'])
 def get_items():
     db = get_db()
-    if request.method == 'POST':
-        data = json.loads(request.data.decode('utf-8'))
-        schema = get_cpv_schema(data['data']['cpv'])
-        if schema:  # validate if have schema
-            try:
-                validate(data['data']['properties']['props'], schema)
-            except Exception as exc:
-                return exc.message
-        data['data']['properties']['props'] = json.dumps(data['data']['properties']['props'])
-        item = Item(data['data'])
-        item.store(db)
-        return json.dumps(item.serialize())
-    else:
-        return 'this is get'
+    data = json.loads(request.data.decode('utf-8'))
+    schema = get_cpv_schema(data['data']['cpv'])
+    if schema:  # validate if have schema
+        try:
+            validate(data['data']['properties']['props'], schema)
+        except Exception as exc:
+            return exc.message
+    data['data']['properties']['props'] = json.dumps(data['data']['properties']['props'])
+    item = Item(data['data'])
+    item.store(db)
+    return json.dumps(item.serialize())
 
 
 @main_app.route('/items/<post_id>/', methods=['GET', 'PUT'])
@@ -43,7 +40,6 @@ def get_item(post_id):
     item = Item.load(get_db(), post_id)
     item_data = item.serialize()
     if request.method == 'GET':
-        print('item', dir(item))
         return json.dumps(item_data)
     else:
         db = get_db()
