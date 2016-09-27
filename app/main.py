@@ -38,10 +38,29 @@ def get_items():
         return 'this is get'
 
 
-@main_app.route('/items/<post_id>/')
+@main_app.route('/items/<post_id>/', methods=['GET', 'PUT'])
 def get_item(post_id):
     item = Item.load(get_db(), post_id)
-    return json.dumps(item.serialize())
+    item_data = item.serialize()
+    if request.method == 'GET':
+        print('item', dir(item))
+        return json.dumps(item_data)
+    else:
+        db = get_db()
+        data = json.loads(request.data.decode('utf-8'))
+        props_str = item_data['properties']['props']
+        props = json.loads(props_str)
+        props.update(data['data']['properties']['props'])
+        schema = get_cpv_schema(item.cpv, version=item.properties.version)
+        if schema:  # validate if have schema
+            try:
+                validate(props, schema)
+            except Exception as exc:
+                return exc.message
+        data['data']['properties']['props'] = json.dumps(props)
+        item.import_data(data['data'])
+        item.store(db)
+        return json.dumps(item.serialize())
 
 
 def get_db():
