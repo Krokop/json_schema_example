@@ -5,6 +5,11 @@ Install dependency
 make build_env
 ```
 
+Set couchdb_url in app/main.py
+```python
+COUCHDB_URL = 'http://admin:admin@127.0.0.1:9000/'
+```
+
 Start server
 ```bash
  make run
