@@ -29,7 +29,7 @@ def create_item():
             validate(data['data']['properties']['props'], schema)
         except Exception as exc:
             return exc.message
-    data['data']['properties']['props'] = json.dumps(data['data']['properties']['props'])
+        data['data']['properties']['props'] = json.dumps(data['data']['properties']['props'])
     item = Item(data['data'])
     item.store(db)
     return json.dumps(item.serialize())
@@ -40,7 +40,9 @@ def get_or_edit_item(post_id):
     item = Item.load(get_db(), post_id)
     item_data = item.serialize()
     if request.method == 'GET':
-        item_data['properties']['props'] = json.loads(item_data['properties']['props'])
+        schema = get_cpv_schema(item_data['cpv'])
+        if schema:  # validate if have schema
+            item_data['properties']['props'] = json.loads(item_data['properties']['props'])
         return json.dumps(item_data)
     else:
         db = get_db()
