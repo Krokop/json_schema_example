@@ -6,6 +6,9 @@ from jsonschema import validate
 from couchdb import Server
 from app.model import BaseSchema, Item, LAST_VERSION
 
+
+COUCHDB_URL = 'http://admin:admin@127.0.0.1:9000/'
+
 main_app = Flask(__name__)
 
 
@@ -69,7 +72,7 @@ def get_db():
     current application context.
     """
     if not hasattr(g, 'db'):
-        server = Server('http://admin:admin@127.0.0.1:9000/')
+        server = Server(COUCHDB_URL)
         if 'web' not in server:
             server.create('web')
         db = server['web']
