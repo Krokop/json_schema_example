@@ -1,0 +1,16 @@
+{
+  "id": "/schemas/10/11/schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "number_of_rooms": {
+      "title": "Кількість кімнат",
+      "description": "Загальна кількість кімнат",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "number_of_rooms"
+  ]
+}

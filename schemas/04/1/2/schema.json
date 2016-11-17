@@ -1,0 +1,28 @@
+{
+  "id": "http://127.0.0.1:5001/schemas/04/1/2/schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "number_of_rooms": {
+      "title": "Кількість кухонб",
+      "description": "Загальна кількість кухонь",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "number_of_rooms"
+  ],
+  "definitions": {
+    "motor": {
+      "title": "Мотор",
+      "type": "object",
+      "properties": {
+        "num": {
+          "title": "NUm",
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
