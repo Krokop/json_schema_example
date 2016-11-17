@@ -3,32 +3,26 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "number_of_rooms": {
-      "title": "Кількість дверей",
-      "description": "Загальна кількість дверей",
+    "living_space": {
+      "title": "Житлова площа",
       "type": "integer",
       "minimum": 0
     },
-    "motor": {
-      "title": "Мотор",
-      "$ref": "../schema.json#/definitions/motor"
+    "number_of_kitchen": {
+      "$ref": "../schema.json#/properties/number_of_kitchen"
+    },
+    "total_area": {
+      "$ref": "../schema.json#/properties/total_area"
+    },
+    "number_of_rooms": {
+      "$ref": "../schema.json#/properties/number_of_rooms"
     }
   },
   "required": [
+    "number_of_kitchen",
+    "total_area",
     "number_of_rooms",
-    "motor"
+    "living_space"
   ],
-  "definitions": {
-    "motor": {
-      "id": "motor",
-      "title": "Мотор",
-      "type": "object",
-      "properties": {
-        "num": {
-          "title": "NUm",
-          "type": "integer"
-        }
-      }
-    }
-  }
+  "additionalProperties": false
 }

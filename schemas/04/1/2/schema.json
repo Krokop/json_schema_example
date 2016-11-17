@@ -3,26 +3,23 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "number_of_rooms": {
-      "title": "Кількість кухонб",
+    "number_of_kitchen": {
+      "title": "Кількість кухонь",
       "description": "Загальна кількість кухонь",
       "type": "integer",
       "minimum": 0
+    },
+    "total_area": {
+      "$ref": "../schema.json#/properties/total_area"
+    },
+    "number_of_rooms": {
+      "$ref": "../schema.json#/properties/number_of_rooms"
     }
   },
   "required": [
-    "number_of_rooms"
+    "number_of_rooms",
+    "total_area",
+    "number_of_kitchen"
   ],
-  "definitions": {
-    "motor": {
-      "title": "Мотор",
-      "type": "object",
-      "properties": {
-        "num": {
-          "title": "NUm",
-          "type": "integer"
-        }
-      }
-    }
-  }
+  "additionalProperties": false
 }

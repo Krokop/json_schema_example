@@ -1,5 +1,5 @@
 {
-  "id": "/schemas/10/schema.json",
+  "id": "http://127.0.0.1:5001/schemas/04/schema.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Schema for all buildings",
   "type": "object",
@@ -13,5 +13,6 @@
   },
   "required": [
     "total_area"
-  ]
+  ],
+  "additionalProperties": false
 }
