@@ -23,29 +23,26 @@ For create item send post POST on 127.0.0.1:5000/items/
 {
   "data": {
     "name": "First item",
-    "cpv": "MA07-9",
+    "cpv": "0412234",
     "properties": {
-      "version": "002",
       "props": {
-        "model": 12,
-        "type": "Хетчбек",
-        "motor": {
-          "properties": 123,
-          "bore": 101
-        }
+        "number_of_kitchen": 1,
+        "total_area": 30,
+        "number_of_rooms": 6,
+        "number_of_doors": 2
       }
     }
   }
 }
 ```
 
-For edit item send PUT on 127.0.0.1:5000/items/{id_item}/
+For edit item send PATCH on 127.0.0.1:5000/items/{id_item}/
 ```json
 {
   "data": {
     "properties": {
       "props": {
-        "model": 1234
+        "number_of_kitchen": 10
       }
     }
   }
@@ -57,16 +54,14 @@ For create item with custom version you need send "version" in "properties"
 {
   "data": {
     "name": "First item",
-    "cpv": "MA07-9",
+    "cpv": "0412234",
     "properties": {
-      "version": "001",
+      "version": "2",
       "props": {
-        "model": "Model as a string",
-        "type": "Хетчбек",
-        "motor": {
-          "properties": 123,
-          "bore": 101
-        }
+        "number_of_kitchen": 1,
+        "total_area": 30,
+        "number_of_rooms": 6,
+        "number_of_doors": 2
       }
     }
   }
