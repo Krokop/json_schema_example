@@ -1,5 +1,5 @@
 {
-  "id": "http://127.0.0.1:5001/schemas/04/1/2/2/schema.json",
+  "id": "http://127.0.0.1:5001/schemas/04/1/2/2/schema_001.json",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
@@ -9,13 +9,13 @@
       "minimum": 0
     },
     "number_of_kitchen": {
-      "$ref": "../schema.json#/properties/number_of_kitchen"
+      "$ref": "../schema_001.json#/properties/number_of_kitchen"
     },
     "total_area": {
-      "$ref": "../schema.json#/properties/total_area"
+      "$ref": "../schema_001.json#/properties/total_area"
     },
     "number_of_rooms": {
-      "$ref": "../schema.json#/properties/number_of_rooms"
+      "$ref": "../schema_001.json#/properties/number_of_rooms"
     }
   },
   "required": [

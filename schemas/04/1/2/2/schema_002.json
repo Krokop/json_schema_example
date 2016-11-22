@@ -1,0 +1,28 @@
+{
+  "id": "http://127.0.0.1:5001/schemas/04/1/2/2/schema_002.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "number_of_doors": {
+      "title": "Кількість дверей",
+      "type": "integer",
+      "minimum": 0
+    },
+    "number_of_kitchen": {
+      "$ref": "../schema_001.json#/properties/number_of_kitchen"
+    },
+    "total_area": {
+      "$ref": "../schema_001.json#/properties/total_area"
+    },
+    "number_of_rooms": {
+      "$ref": "../schema_001.json#/properties/number_of_rooms"
+    }
+  },
+  "required": [
+    "number_of_kitchen",
+    "total_area",
+    "number_of_rooms",
+    "number_of_doors"
+  ],
+  "additionalProperties": false
+}

@@ -1,4 +1,3 @@
-from schematics.models import Model
 from schematics.types import StringType
 from schematics.types.compound import PolyModelType
 from couchdb_schematics.document import SchematicsDocument

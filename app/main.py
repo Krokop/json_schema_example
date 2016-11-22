@@ -2,43 +2,39 @@ import json
 import os.path
 import flaskext.couchdb
 from flask import Flask, g, request
-from jsonschema import validate
-from couchdb import Server
-from app.model import BaseSchema, Item, LAST_VERSION
+from jsonschema import validate, Draft4Validator
 
-
-COUCHDB_URL = 'http://admin:admin@127.0.0.1:9000/'
+from app.model import Item
+from schematics.exceptions import ValidationError
+from app.utils import prepare_item_to_return, get_db, get_cpv_schema
 
 main_app = Flask(__name__)
-
-
-def get_cpv_schema(cpv_code, version=LAST_VERSION):
-    cpv_start = cpv_code[:4]
-    path = "./schemas/{cpv}_{version}.json".format(cpv=cpv_start, version=version)
-    if os.path.isfile(path):
-        with open(path, 'rb') as schema_file:
-            schema_text = schema_file.read().decode('utf-8')
-            return json.loads(schema_text)
-    return
 
 
 @main_app.route('/items', methods=['POST'])
 def create_item():
     db = get_db()
     data = json.loads(request.data.decode('utf-8'))
-    schema = get_cpv_schema(data['data']['cpv'])
+    schema = get_cpv_schema(data['data']['cpv'], data['data']['properties']['version'] or 1)
     if schema:  # validate if have schema
         try:
-            validate(data['data']['properties']['props'], schema)
+            Draft4Validator(schema).validate(data['data']['properties']['props'])
         except Exception as exc:
-            return exc.message
+            return str(exc), 422
         data['data']['properties']['props'] = json.dumps(data['data']['properties']['props'])
+    if 'properties' in data['data'] and not schema:
+        return json.dumps({"error": "We can't save properties because json schema wasn't found."})
     item = Item(data['data'])
-    item.store(db)
-    return json.dumps(item.serialize())
+    try:
+        item.validate()
+    except ValidationError as ex:
+        return json.dumps(ex.messages)
+    else:
+        item.store(db)
+    return json.dumps(prepare_item_to_return(item))
 
 
-@main_app.route('/items/<post_id>/', methods=['GET', 'PUT'])
+@main_app.route('/items/<post_id>/', methods=['GET', 'PATCH'])
 def get_or_edit_item(post_id):
     item = Item.load(get_db(), post_id)
     item_data = item.serialize()
@@ -47,7 +43,7 @@ def get_or_edit_item(post_id):
         if schema:  # validate if have schema
             item_data['properties']['props'] = json.loads(item_data['properties']['props'])
         return json.dumps(item_data)
-    else:
+    elif request.method == 'PATCH':
         db = get_db()
         data = json.loads(request.data.decode('utf-8'))
         props_str = item_data['properties']['props']
@@ -58,26 +54,14 @@ def get_or_edit_item(post_id):
             try:
                 validate(props, schema)
             except Exception as exc:
-                return exc.message
+                return exc.message, 422
         data['data']['properties']['props'] = json.dumps(props)
         item.import_data(data['data'])
         item.store(db)
-        item_ser = item.serialize()
-        item_ser['properties']['props'] = json.loads(item_ser['properties']['props'])
-        return json.dumps(item_ser)
+        return json.dumps(prepare_item_to_return(item))
+    else:
+        return "", 405
 
-
-def get_db():
-    """ Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    if not hasattr(g, 'db'):
-        server = Server(COUCHDB_URL)
-        if 'web' not in server:
-            server.create('web')
-        db = server['web']
-        g.db = db
-    return g.db
 
 """
 Flask main

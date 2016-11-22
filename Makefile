@@ -10,5 +10,5 @@ build_env:
 run:
 
 	@export FLASK_DEBUG=1
-	export FLASK_APP=app/main.py
+	@export FLASK_APP=app/main.py
 	@.env/bin/flask run
