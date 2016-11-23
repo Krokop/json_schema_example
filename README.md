@@ -18,50 +18,61 @@ Start server
 
 Example data
 
-For create item send post POST on 127.0.0.1:5000/items/
+Створемо item з кодом 0412234 та версією 1
+POST on 127.0.0.1:5000/items/
 ```json
 {
   "data": {
     "name": "First item",
     "cpv": "0412234",
     "properties": {
+      "version": "1",
       "props": {
         "number_of_kitchen": 1,
         "total_area": 30,
         "number_of_rooms": 6,
-        "number_of_doors": 2
+        "living_space": 2
       }
     }
   }
 }
 ```
 
-For edit item send PATCH on 127.0.0.1:5000/items/{id_item}/
+
+Переглянемо створений item
+GET on 127.0.0.1:5000/items/{id_item}/
 ```json
 {
-  "data": {
-    "properties": {
-      "props": {
-        "number_of_kitchen": 10
-      }
-    }
+  "_rev": "1-7dafbb12197edb81d5aa037fb49c0a2d",
+  "doc_type": "Item",
+  "_id": "{id_item}",
+  "cpv": "0412234",
+  "name": "First item",
+  "properties": {
+    "props": {
+      "total_area": 30,
+      "number_of_rooms": 6,
+      "living_space": 2,
+      "number_of_kitchen": 1
+    },
+    "save_cpv": "04122",
+    "doc_type": "BaseSchema",
+    "version": "001"
   }
 }
 ```
 
-For create item with custom version you need send "version" in "properties"
+Але версія 1 нам не підходить і ми хочемо оновитися до 2, для цоього зробимо PATCH з новою версією та даними.
 ```json
 {
   "data": {
-    "name": "First item",
-    "cpv": "0412234",
     "properties": {
-      "version": "2",
+      "version": 2,
       "props": {
+        "number_of_doors": 5,
         "number_of_kitchen": 1,
-        "total_area": 30,
-        "number_of_rooms": 6,
-        "number_of_doors": 2
+        "total_area": 2,
+        "number_of_rooms": 5
       }
     }
   }
