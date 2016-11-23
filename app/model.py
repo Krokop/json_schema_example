@@ -9,6 +9,7 @@ LAST_VERSION = '001'
 class BaseSchema(SchematicsDocument):
     """ BaseSchema model """
     version = StringType(default=LAST_VERSION)
+    save_cpv = StringType(max_length=10)
     props = StringType()  # here we will save all properties
 
 

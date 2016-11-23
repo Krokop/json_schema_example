@@ -1,7 +1,6 @@
 import json
-import os.path
 import flaskext.couchdb
-from flask import Flask, g, request
+from flask import Flask, request
 from jsonschema import validate, Draft4Validator
 
 from app.model import Item
@@ -15,13 +14,18 @@ main_app = Flask(__name__)
 def create_item():
     db = get_db()
     data = json.loads(request.data.decode('utf-8'))
-    schema = get_cpv_schema(data['data']['cpv'], data['data']['properties']['version'] or 1)
+    try:
+        schema, save_cpv, version = get_cpv_schema(data['data']['cpv'], data['data']['properties'].get('version', 'last'))
+    except FileNotFoundError:
+        return json.dumps({'error': 'Schema not found'}), 422
     if schema:  # validate if have schema
         try:
             Draft4Validator(schema).validate(data['data']['properties']['props'])
         except Exception as exc:
             return str(exc), 422
         data['data']['properties']['props'] = json.dumps(data['data']['properties']['props'])
+        data['data']['properties']['version'] = version
+        data['data']['properties']['save_cpv'] = save_cpv
     if 'properties' in data['data'] and not schema:
         return json.dumps({"error": "We can't save properties because json schema wasn't found."})
     item = Item(data['data'])
@@ -34,33 +38,45 @@ def create_item():
     return json.dumps(prepare_item_to_return(item))
 
 
-@main_app.route('/items/<post_id>/', methods=['GET', 'PATCH'])
+@main_app.route('/items/<post_id>/', methods=['GET'])
 def get_or_edit_item(post_id):
+    """ get item """
     item = Item.load(get_db(), post_id)
     item_data = item.serialize()
-    if request.method == 'GET':
-        schema = get_cpv_schema(item_data['cpv'])
-        if schema:  # validate if have schema
-            item_data['properties']['props'] = json.loads(item_data['properties']['props'])
-        return json.dumps(item_data)
-    elif request.method == 'PATCH':
-        db = get_db()
-        data = json.loads(request.data.decode('utf-8'))
-        props_str = item_data['properties']['props']
-        props = json.loads(props_str)
-        props.update(data['data']['properties']['props'])
-        schema = get_cpv_schema(item.cpv, version=item.properties.version)
+    if item_data['properties']:
+        schema, code, _ = get_cpv_schema(item_data['properties']['save_cpv'], item_data['properties']['version'])
         if schema:  # validate if have schema
             try:
-                validate(props, schema)
+                json_props = json.loads(item_data['properties']['props'])
+                Draft4Validator(schema).validate(json_props)
             except Exception as exc:
-                return exc.message, 422
-        data['data']['properties']['props'] = json.dumps(props)
-        item.import_data(data['data'])
-        item.store(db)
-        return json.dumps(prepare_item_to_return(item))
-    else:
-        return "", 405
+                return str(exc), 422
+            item_data['properties']['props'] = json_props
+    return json.dumps(item_data)
+
+
+@main_app.route('/items/<post_id>/', methods=['PATCH'])
+def edit_item(post_id):
+    """ Edit item """
+    item = Item.load(get_db(), post_id)
+    data = json.loads(request.data.decode('utf-8'))
+    if 'properties' in data['data'] and 'props' in data['data']['properties']:
+        data['data']['properties']['props'] = json.dumps(data['data']['properties']['props'])
+    item.import_data(data['data'])
+    item_data = item.serialize()
+    try:
+        schema, code, version = get_cpv_schema(item.cpv, version=item_data['properties']['version'])
+    except FileNotFoundError:
+        return json.dumps({'error': 'Schema not found'}), 422
+    if schema:  # validate if have schema
+        try:
+            validate(json.loads(item.properties.props), schema)
+        except Exception as exc:
+            return exc.message, 422
+        item.properties.version = version
+        item.properties.save_cpv = code
+    item.store(get_db())
+    return json.dumps(prepare_item_to_return(item))
 
 
 """
