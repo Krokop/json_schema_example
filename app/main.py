@@ -12,10 +12,13 @@ main_app = Flask(__name__)
 
 @main_app.route('/items', methods=['POST'])
 def create_item():
+    """ Get item data validate and save to db """
     db = get_db()
     data = json.loads(request.data.decode('utf-8'))
     try:
-        schema, save_cpv, version = get_cpv_schema(data['data']['cpv'], data['data']['properties'].get('version', 'last'))
+        schema, save_cpv, version = get_cpv_schema(
+            data['data']['cpv'],
+            data['data']['properties'].get('version', 'last'))
     except FileNotFoundError:
         return json.dumps({'error': 'Schema not found'}), 422
     if schema:  # validate if have schema
@@ -39,12 +42,13 @@ def create_item():
 
 
 @main_app.route('/items/<post_id>/', methods=['GET'])
-def get_or_edit_item(post_id):
-    """ get item """
+def get_item(post_id):
+    """ Return item by id """
     item = Item.load(get_db(), post_id)
     item_data = item.serialize()
     if item_data['properties']:
-        schema, code, _ = get_cpv_schema(item_data['properties']['save_cpv'], item_data['properties']['version'])
+        schema, code, _ = get_cpv_schema(item_data['properties']['save_cpv'],
+                                         item_data['properties']['version'])
         if schema:  # validate if have schema
             try:
                 json_props = json.loads(item_data['properties']['props'])
@@ -57,7 +61,7 @@ def get_or_edit_item(post_id):
 
 @main_app.route('/items/<post_id>/', methods=['PATCH'])
 def edit_item(post_id):
-    """ Edit item """
+    """ Edit item by id """
     item = Item.load(get_db(), post_id)
     data = json.loads(request.data.decode('utf-8'))
     if 'properties' in data['data'] and 'props' in data['data']['properties']:
@@ -65,7 +69,8 @@ def edit_item(post_id):
     item.import_data(data['data'])
     item_data = item.serialize()
     try:
-        schema, code, version = get_cpv_schema(item.cpv, version=item_data['properties']['version'])
+        schema, code, version = get_cpv_schema(
+            item.cpv, version=item_data['properties']['version'])
     except FileNotFoundError:
         return json.dumps({'error': 'Schema not found'}), 422
     if schema:  # validate if have schema
